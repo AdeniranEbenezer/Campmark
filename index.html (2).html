@@ -375,17 +375,42 @@ select.fi{appearance:none;cursor:pointer;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 .lpip{width:7px;height:7px;border-radius:50%;background:var(--success);display:inline-block;animation:pulse 1.8s infinite;}
 
+/* Eye button */
+.pw-wrap{position:relative;margin-bottom:0;}
+.eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--mt);padding:4px;line-height:1;}
+.eye-btn:hover{color:var(--tx);}
+
 @media(max-width:900px){
   .mg,.news-grid,.spg,.rel-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
   .sc{display:none;}
 }
 @media(max-width:600px){
   .hero h1{font-size:24px;}
-  .evr,.mpg{grid-template-columns:repeat(2,minmax(0,1fr));}
-  .stats-row{gap:20px;}
-  .mc{padding:14px;}
-  .cw{padding:14px;}
+  .evr{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .mpg{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .stats-row{gap:16px;}
+  .mc{padding:12px 14px;}
+  .cw{padding:12px 14px;}
   .mg,.news-grid,.spg,.rel-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  /* Mobile feed — full width readable posts */
+  .post{border-radius:12px;margin-bottom:10px;}
+  .post-inner{padding:12px 13px 8px;}
+  .pbody{font-size:14px;line-height:1.7;}
+  /* Mobile complaints — bigger text */
+  .crh{padding:12px;}
+  .crtt{font-size:13px;}
+  .sbadge{font-size:11px;padding:4px 9px;}
+  /* Mobile home — ann cards taller image */
+  .ann-card-img{width:80px;min-height:80px;}
+  /* Mobile nav */
+  .nav{padding:0 14px;}
+  .logo{font-size:19px;}
+  /* Mobile market — 2 cols */
+  .mph{padding:14px 14px 0;}
+  .mg{padding:14px;}
+  /* Make sure two-col stacks on mobile */
+  .two-col{flex-direction:column;}
+  .mc{width:100%;}
 }
 </style>
 </head>
@@ -406,21 +431,33 @@ select.fi{appearance:none;cursor:pointer;}
       </div>
       <div id="f-in">
         <div class="err-msg" id="in-err" style="display:none;"></div>
-        <label class="fl">Matric Number</label><input class="fi" id="in-m" placeholder="e.g. 2023/12745"/>
-        <label class="fl">Password</label><input class="fi" id="in-p" type="password" placeholder="Your password"/>
+        <label class="fl">Matric Number</label>
+        <input class="fi" id="in-m" placeholder="e.g. 2023/12745" onkeydown="if(event.key==='Enter')document.getElementById('in-p').focus()"/>
+        <label class="fl">Password</label>
+        <div class="pw-wrap">
+          <input class="fi" id="in-p" type="password" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()" style="margin-bottom:0;padding-right:44px;"/>
+          <button class="eye-btn" type="button" onclick="toggleEye('in-p',this)">👁</button>
+        </div>
+        <div style="margin-bottom:10px;"></div>
         <button class="btn-or" id="in-btn" onclick="doLogin()">Sign In →</button>
         <div class="auth-note">No account? <span onclick="sAuth('up')">Create one</span></div>
       </div>
       <div id="f-up" style="display:none;">
         <div class="err-msg" id="up-err" style="display:none;"></div>
-        <label class="fl">Full Name</label><input class="fi" id="up-n" placeholder="Your full name"/>
+        <label class="fl">Full Name</label>
+        <input class="fi" id="up-n" placeholder="Your full name" onkeydown="if(event.key==='Enter')document.getElementById('up-m').focus()"/>
         <div class="fr2">
-          <div><label class="fl">Matric Number</label><input class="fi" id="up-m" placeholder="2023/12745"/></div>
+          <div><label class="fl">Matric Number</label><input class="fi" id="up-m" placeholder="2023/12745" onkeydown="if(event.key==='Enter')document.getElementById('up-p').focus()"/></div>
           <div><label class="fl">Department</label>
             <select class="fi" id="up-d"><option>Computer Science</option><option>Law</option><option>Engineering</option><option>Pharmacy</option><option>Business Admin</option><option>Mass Comm</option><option>Medicine</option><option>Other</option></select>
           </div>
         </div>
-        <label class="fl">Password</label><input class="fi" id="up-p" type="password" placeholder="Create a password"/>
+        <label class="fl">Password</label>
+        <div class="pw-wrap">
+          <input class="fi" id="up-p" type="password" placeholder="Create a password" onkeydown="if(event.key==='Enter')doSignup()" style="margin-bottom:0;padding-right:44px;"/>
+          <button class="eye-btn" type="button" onclick="toggleEye('up-p',this)">👁</button>
+        </div>
+        <div style="margin-bottom:10px;"></div>
         <button class="btn-or" id="up-btn" onclick="doSignup()">Create Account →</button>
         <div class="auth-note">Have account? <span onclick="sAuth('in')">Sign in</span></div>
       </div>
@@ -728,7 +765,21 @@ const BUCKET='campmark',ADMIN='2023/12745';
 let dark=true,anonOn=false,activeRel='ch',cu=null,mins=62;
 let postFiles=[],sellFile=null,relFiles=[],compFiles=[],newsFile=null;
 
+// Eye toggle
+function toggleEye(inputId,btn){
+  const inp=document.getElementById(inputId);
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈';}
+  else{inp.type='password';btn.textContent='👁';}
+}
+
 function sAuth(t){document.getElementById('f-in').style.display=t==='in'?'block':'none';document.getElementById('f-up').style.display=t==='up'?'block':'none';document.getElementById('tab-in').classList.toggle('act',t==='in');document.getElementById('tab-up').classList.toggle('act',t==='up');}
+
+// Check saved session on page load
+window.addEventListener('load',()=>{
+  const saved=localStorage.getItem('cm_user');
+  if(saved){try{cu=JSON.parse(saved);launch();}catch{localStorage.removeItem('cm_user');}}
+});
+
 async function doLogin(){
   const m=document.getElementById('in-m').value.trim(),p=document.getElementById('in-p').value.trim();
   if(!m||!p){showErr('in-err','Enter matric number and password.');return;}
@@ -736,7 +787,9 @@ async function doLogin(){
   const{data,error}=await sb.from('users').select('*').eq('matric_number',m).eq('password',p).single();
   btn.disabled=false;btn.textContent='Sign In →';
   if(error||!data){showErr('in-err','Wrong matric number or password.');return;}
-  cu=data;launch();
+  cu=data;
+  localStorage.setItem('cm_user',JSON.stringify(cu));
+  launch();
 }
 async function doSignup(){
   const n=document.getElementById('up-n').value.trim(),m=document.getElementById('up-m').value.trim(),d=document.getElementById('up-d').value,p=document.getElementById('up-p').value.trim();
@@ -748,7 +801,9 @@ async function doSignup(){
   const{data,error}=await sb.from('users').insert({full_name:n,matric_number:m,department:d,password:p}).select().single();
   btn.disabled=false;btn.textContent='Create Account →';
   if(error){showErr('up-err','Could not create account.');return;}
-  cu=data;launch();
+  cu=data;
+  localStorage.setItem('cm_user',JSON.stringify(cu));
+  launch();
 }
 function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',4000);}
 function launch(){
