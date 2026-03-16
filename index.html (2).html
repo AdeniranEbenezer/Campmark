@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Campmark — Bells University</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --or:#FF6B1A;--orl:#FF8C4A;--ordim:#ff6b1a18;--orb:#ff6b1a33;
+  --bg:#0E0E10;--s1:#18181C;--s2:#222228;--bd:#2A2A32;
+  --tx:#F0F0F2;--mt:#77777F;--danger:#E24B4A;--success:#3DD68C;
+}
+body.light{--bg:#F2F2F4;--s1:#FFFFFF;--s2:#F0F0F2;--bd:#E0E0E8;--tx:#111114;--mt:#66666E;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);font-size:14px;min-height:100vh;}
+
+/* ── NAV ── */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:54px;background:var(--s1);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:200;}
+.logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-0.5px;cursor:pointer;}
+.logo b{color:var(--or);}
+.nav-links{display:flex;gap:1px;overflow-x:auto;scrollbar-width:none;}
+.nav-links::-webkit-scrollbar{display:none;}
+.nl{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--mt);padding:5px 10px;border-radius:7px;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0;}
+.nl:hover,.nl.act{background:var(--s2);color:var(--tx);}
+.nl.act{color:var(--or);}
+.nav-r{display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.nb{background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:4px 9px;font-size:12px;color:var(--mt);cursor:pointer;display:flex;align-items:center;gap:4px;}
+.notif-cnt{background:var(--or);color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:100px;}
+.uav{width:32px;height:32px;border-radius:50%;background:var(--or);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:#fff;cursor:pointer;}
+.tbtn{background:var(--s2);border:1px solid var(--bd);border-radius:7px;padding:4px 8px;cursor:pointer;font-size:13px;color:var(--mt);}
+.pg{display:none;}.pg.act{display:block;}
+
+/* ── AUTH ── */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--bg);}
+.auth-box{background:var(--s1);border:1px solid var(--bd);border-radius:20px;padding:32px;width:100%;max-width:390px;}
+.auth-logo{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;text-align:center;margin-bottom:4px;}
+.auth-logo b{color:var(--or);}
+.auth-sub{text-align:center;font-size:13px;color:var(--mt);margin-bottom:24px;}
+.auth-tabs{display:flex;border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:20px;}
+.auth-tab{flex:1;background:none;border:none;padding:9px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--mt);cursor:pointer;}
+.auth-tab.act{background:var(--or);color:#fff;font-weight:600;}
+.fl{font-size:12px;color:var(--mt);margin-bottom:5px;display:block;margin-top:2px;}
+.fi{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:10px 12px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:13px;margin-bottom:10px;outline:none;transition:border-color .15s;}
+.fi:focus{border-color:var(--or);}
+textarea.fi{resize:vertical;min-height:80px;}
+select.fi{appearance:none;cursor:pointer;}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.btn-or{width:100%;background:var(--or);color:#fff;border:none;border-radius:10px;padding:12px;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;}
+.btn-or:hover{background:var(--orl);}
+.btn-or:disabled{opacity:0.6;cursor:not-allowed;}
+.auth-note{text-align:center;font-size:12px;color:var(--mt);margin-top:12px;}
+.auth-note span{color:var(--or);cursor:pointer;}
+.err-msg{color:var(--danger);font-size:12px;margin-bottom:8px;text-align:center;padding:8px;background:#2E1A1A;border-radius:7px;}
+
+/* ── HERO ── */
+.hero{background:var(--s1);border-bottom:1px solid var(--bd);padding:52px 24px 40px;text-align:center;position:relative;overflow:hidden;}
+.hero-glow{position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(255,107,26,0.12) 0%,transparent 70%);pointer-events:none;}
+.hero h1{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;line-height:1.18;margin-bottom:12px;letter-spacing:-0.5px;}
+.hero h1 span{color:var(--or);}
+.hero p{font-size:14px;color:var(--mt);max-width:440px;margin:0 auto 26px;line-height:1.7;}
+.hero-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.btn-hero{background:var(--or);color:#fff;border:none;border-radius:10px;padding:12px 26px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s;}
+.btn-hero:hover{background:var(--orl);}
+.btn-ghost{background:none;border:1px solid var(--bd);color:var(--tx);border-radius:10px;padding:12px 26px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.btn-ghost:hover{border-color:var(--or);color:var(--or);}
+.stats-row{display:flex;justify-content:center;gap:40px;padding:18px 24px;border-bottom:1px solid var(--bd);background:var(--s1);flex-wrap:wrap;}
+.stat-n{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--or);text-align:center;}
+.stat-l{font-size:10px;color:var(--mt);text-transform:uppercase;letter-spacing:0.4px;text-align:center;margin-top:2px;}
+
+/* ── LAYOUT ── */
+.two-col{display:flex;}
+.mc{flex:1;padding:20px 24px;min-width:0;}
+.sc{width:260px;flex-shrink:0;padding:20px 16px 20px 0;border-left:1px solid var(--bd);}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.st{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.sm2{font-size:12px;color:var(--or);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;}
+.sr{margin-bottom:28px;}
+.sl{font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+
+/* ── TAGS ── */
+.tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;flex-shrink:0;text-transform:uppercase;letter-spacing:0.3px;}
+.t-off{background:#1A2E4A;color:#60A5FA;}
+.t-sp{background:#1A3020;color:#3DD68C;}
+.t-ch{background:#2E1A3A;color:#C084FC;}
+.t-ms{background:#1A2E1A;color:#4ADE80;}
+.t-ns{background:#1A2020;color:#2DD4BF;}
+.t-mk{background:#1A3020;color:#4ADE80;}
+.t-gen{background:#2A2A32;color:#94A3B8;}
+
+/* ── SPINNER ── */
+.spinner-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;gap:14px;}
+.spinner{width:32px;height:32px;border:3px solid var(--bd);border-top-color:var(--or);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spinner-text{font-size:13px;color:var(--mt);}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;gap:10px;text-align:center;}
+.empty-icon{font-size:40px;opacity:0.5;}
+.empty-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--mt);}
+.empty-sub{font-size:12px;color:var(--mt);}
+
+/* ── FEED POSTS ── */
+.post{background:var(--s1);border:1px solid var(--bd);border-radius:16px;margin-bottom:12px;overflow:hidden;transition:border-color .2s;}
+.post:hover{border-color:#3A3A44;}
+.post-inner{padding:14px 16px 10px;}
+.phead{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.pav{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+.av-or{background:var(--or);}
+.av-bl{background:#3B82F6;}
+.av-gr{background:#10B981;}
+.av-pu{background:#8B5CF6;}
+.av-pk{background:#EC4899;}
+.pmeta{flex:1;}
+.pname{font-size:13px;font-weight:600;}
+.veri{color:var(--or);font-size:10px;margin-left:4px;}
+.ptime{font-size:11px;color:var(--mt);margin-top:2px;}
+.pbody{font-size:13px;line-height:1.68;margin-bottom:10px;color:var(--tx);}
+
+/* Post image — full width, tall, beautiful */
+.post-media{width:100%;position:relative;background:var(--s2);overflow:hidden;cursor:pointer;}
+.post-media img{width:100%;max-height:420px;object-fit:cover;display:block;transition:transform .25s;}
+.post-media:hover img{transform:scale(1.015);}
+.post-media video{width:100%;max-height:420px;display:block;background:#000;}
+.post-media.multi-2{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+.post-media.multi-3{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+.post-media.multi-3 .img-item:first-child{grid-column:span 2;}
+.img-item{overflow:hidden;cursor:pointer;position:relative;background:var(--s2);}
+.img-item img{width:100%;height:220px;object-fit:cover;display:block;transition:transform .25s;}
+.img-item:hover img{transform:scale(1.03);}
+.more-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#fff;}
+.pact{display:flex;gap:4px;padding:10px 14px;border-top:1px solid var(--bd);margin-top:0;}
+.abt{background:none;border:none;color:var(--mt);font-size:12px;cursor:pointer;padding:5px 10px;border-radius:7px;display:flex;align-items:center;gap:5px;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.abt:hover{background:var(--s2);color:var(--tx);}
+.abt.liked{color:var(--or);}
+.delbtn{margin-left:auto;color:var(--danger)!important;}
+.delbtn:hover{background:#2E1A1A!important;}
+
+/* ── COMPOSER ── */
+.cmp{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:14px;}
+.cmp-top{display:flex;gap:10px;align-items:flex-start;}
+.cav-sm{width:36px;height:36px;border-radius:50%;background:var(--or);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.cbox{flex:1;background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:10px 14px;color:var(--mt);font-size:13px;cursor:pointer;transition:border-color .15s;}
+.cbox:hover{border-color:var(--or);}
+.cact{display:flex;gap:6px;margin-top:10px;padding-left:46px;flex-wrap:wrap;}
+.cbtn{background:none;border:1px solid var(--bd);border-radius:7px;padding:5px 12px;color:var(--mt);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.cbtn:hover{border-color:var(--or);color:var(--or);}
+.psub{margin-left:auto;background:var(--or);color:#fff;border:none;border-radius:7px;padding:6px 18px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* ── MARKETPLACE — Square Jumia style ── */
+.mph{background:var(--s1);border-bottom:1px solid var(--bd);padding:20px 24px 0;}
+.mpt{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.mptitle{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;}
+.msell{background:var(--or);color:#fff;border:none;border-radius:9px;padding:9px 18px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s;}
+.msell:hover{background:var(--orl);}
+.msi{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:9px 14px;color:var(--tx);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;margin-bottom:14px;}
+.msi:focus{border-color:var(--or);}
+.cats{display:flex;gap:6px;overflow-x:auto;padding-bottom:14px;scrollbar-width:none;}
+.cats::-webkit-scrollbar{display:none;}
+.catb{background:none;border:1px solid var(--bd);border-radius:100px;padding:5px 14px;font-size:12px;color:var(--mt);cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:all .15s;flex-shrink:0;}
+.catb:hover,.catb.act{background:var(--or);border-color:var(--or);color:#fff;}
+
+/* Market grid — 3 cols square */
+.mg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:20px 24px;}
+.mc2{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden;transition:all .2s;cursor:pointer;}
+.mc2:hover{border-color:var(--or);transform:translateY(-2px);box-shadow:0 4px 20px rgba(255,107,26,0.08);}
+.mkt-sq{width:100%;aspect-ratio:1/1;background:var(--s2);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:48px;}
+.mkt-sq img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s;}
+.mc2:hover .mkt-sq img{transform:scale(1.05);}
+.sold-badge{position:absolute;top:10px;left:10px;background:var(--danger);color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;letter-spacing:0.3px;}
+.mcb{padding:10px 12px 12px;}
+.mcn{font-size:13px;font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--tx);}
+.mprice{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--or);margin-bottom:2px;}
+.msel{font-size:10px;color:var(--mt);margin-bottom:8px;}
+.dmbtn{width:100%;background:var(--or);color:#fff;border:none;border-radius:8px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s;}
+.dmbtn:hover{background:var(--orl);}
+.dmbtn:disabled{opacity:0.4;cursor:not-allowed;background:var(--mt);}
+.soldbtn{background:none;border:1px solid var(--bd);border-radius:7px;padding:5px;font-size:11px;color:var(--mt);cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;width:100%;transition:all .15s;}
+.soldbtn:hover{border-color:var(--danger);color:var(--danger);}
+.soldbtn.done{border-color:var(--success);color:var(--success);background:#0D2018;cursor:default;}
+
+/* Home market preview */
+.mpg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
+.mpc{background:var(--s1);border:1px solid var(--bd);border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .15s;}
+.mpc:hover{border-color:var(--or);}
+.mt2{width:100%;aspect-ratio:1/1;background:var(--s2);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:30px;}
+.mt2 img{width:100%;height:100%;object-fit:cover;position:absolute;}
+.sov{position:absolute;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;}
+.spill{background:var(--danger);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;}
+.mpi{padding:7px 9px 9px;}
+.mpn{font-size:11px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mpp{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--or);}
+.mps{font-size:10px;color:var(--mt);}
+
+/* ── RELIGIOUS — Big grid cards like news website ── */
+.rtabs{display:flex;border-bottom:1px solid var(--bd);padding:0 24px;background:var(--s1);}
+.rtab{background:none;border:none;border-bottom:2px solid transparent;padding:14px 18px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--mt);cursor:pointer;transition:all .15s;margin-bottom:-1px;}
+.rtab.act-ch{color:#C084FC;border-bottom-color:#C084FC;}
+.rtab.act-ms{color:#4ADE80;border-bottom-color:#4ADE80;}
+.rcont{display:none;padding:20px 24px;}
+.rcont.act{display:block;}
+
+/* Upcoming service strip */
+.svc-card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;overflow:hidden;display:flex;align-items:stretch;margin-bottom:8px;}
+.svc-date{width:64px;flex-shrink:0;background:var(--or);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 0;}
+.svc-day{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#fff;line-height:1;}
+.svc-mon{font-size:9px;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
+.svc-body{padding:12px 16px;flex:1;}
+.svc-type{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;}
+.svc-title{font-size:13px;font-weight:600;margin-bottom:2px;}
+.svc-loc{font-size:11px;color:var(--mt);}
+.svc-rsvp{align-self:center;margin-right:14px;background:none;border:1px solid var(--bd);border-radius:7px;padding:6px 14px;font-size:11px;color:var(--mt);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0;}
+.svc-rsvp:hover{border-color:var(--or);color:var(--or);}
+.svc-rsvp.done{border-color:var(--success);color:var(--success);}
+
+/* Religious post grid — BIG CARDS like news website */
+.rel-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:16px;}
+.rcard{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .2s;}
+.rcard:hover{border-color:var(--or);transform:translateY(-2px);}
+/* Big image — 4:3 ratio, takes up most of the card */
+.rcard-img{width:100%;aspect-ratio:4/3;background:var(--s2);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:52px;}
+.rcard-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s;}
+.rcard:hover .rcard-img img{transform:scale(1.04);}
+.rcard-body{padding:12px 14px 14px;}
+.rcard-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px;}
+.rcard-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;line-height:1.4;margin-bottom:5px;color:var(--tx);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.rcard-meta{font-size:11px;color:var(--mt);}
+.rcard-meta span{color:var(--or);}
+.rcard-acts{display:flex;gap:4px;margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);}
+.rabt{background:none;border:none;color:var(--mt);font-size:11px;cursor:pointer;padding:3px 8px;border-radius:6px;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.rabt:hover{background:var(--s2);color:var(--tx);}
+
+/* Rel composer */
+.rel-cmp{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:13px;margin-bottom:4px;}
+
+/* ── NEWS — Big hero + small grid ── */
+.news-hero{background:var(--s1);border:1px solid var(--bd);border-radius:16px;overflow:hidden;margin-bottom:14px;cursor:pointer;transition:border-color .2s;}
+.news-hero:hover{border-color:var(--or);}
+.news-hero-img{width:100%;height:220px;background:var(--s2);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:64px;}
+.news-hero-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s;}
+.news-hero:hover .news-hero-img img{transform:scale(1.02);}
+.news-hero-body{padding:16px 18px 18px;}
+.news-hero-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;display:inline-block;}
+.news-hero-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;line-height:1.3;margin-bottom:8px;}
+.news-hero-excerpt{font-size:13px;color:var(--mt);line-height:1.65;margin-bottom:10px;}
+.news-hero-meta{font-size:11px;color:var(--mt);}
+.news-hero-author{color:var(--or);}
+
+/* News grid — 3 cols like website image */
+.news-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+.news-card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .2s;}
+.news-card:hover{border-color:var(--or);transform:translateY(-2px);}
+.news-card-img{width:100%;aspect-ratio:16/10;background:var(--s2);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:40px;}
+.news-card-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .25s;}
+.news-card:hover .news-card-img img{transform:scale(1.04);}
+.news-card-body{padding:11px 13px 13px;}
+.news-card-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:5px;}
+.news-card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;line-height:1.4;margin-bottom:4px;color:var(--tx);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.news-card-meta{font-size:11px;color:var(--mt);}
+.news-card-author{color:var(--or);}
+
+/* ── SPORTS ── */
+.sport-hero{background:var(--s1);border:1px solid var(--bd);border-radius:16px;overflow:hidden;margin-bottom:14px;}
+.sport-hero-img{width:100%;height:180px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:64px;position:relative;overflow:hidden;}
+.sport-hero-img img{width:100%;height:100%;object-fit:cover;position:absolute;}
+.sport-hero-body{padding:16px 18px 18px;}
+.spg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+.spc{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .2s;}
+.spc:hover{border-color:var(--or);transform:translateY(-2px);}
+.spi{width:100%;aspect-ratio:16/9;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;overflow:hidden;}
+.spi img{width:100%;height:100%;object-fit:cover;position:absolute;}
+.spinfo{padding:10px 12px 12px;}
+.splb{font-size:10px;color:var(--mt);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;display:flex;align-items:center;gap:5px;}
+.sptt{font-size:12px;font-weight:600;margin-bottom:4px;}
+.spsc{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--or);}
+.spdt{font-size:11px;color:var(--mt);margin-top:2px;}
+
+/* ── EVENTS ── */
+.evr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
+.evc{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:13px;cursor:pointer;transition:border-color .15s;}
+.evc:hover{border-color:var(--or);}
+.edb{background:var(--ordim);border:1px solid var(--orb);border-radius:8px;padding:5px 8px;display:inline-flex;flex-direction:column;align-items:center;margin-bottom:8px;}
+.edy{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--or);line-height:1;}
+.edm{font-size:9px;color:var(--orl);text-transform:uppercase;letter-spacing:0.4px;}
+.evn{font-size:12px;font-weight:600;margin-bottom:2px;}
+.evl{font-size:11px;color:var(--mt);}
+.evrsvp{margin-top:8px;background:var(--ordim);border:1px solid var(--orb);border-radius:7px;padding:5px 8px;font-size:11px;color:var(--or);font-weight:600;cursor:pointer;width:100%;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.evrsvp:hover{background:var(--or);color:#fff;border-color:var(--or);}
+.evrsvp.done{background:#1A3020;border-color:var(--success);color:var(--success);}
+
+/* ── COMPLAINTS ── */
+.cw{max-width:720px;margin:0 auto;padding:24px;}
+.ch2{text-align:center;padding:32px 0 28px;}
+.ch2 h2{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:8px;}
+.ch2 h2 span{color:var(--or);}
+.ch2 p{font-size:13px;color:var(--mt);line-height:1.65;}
+.cfbox{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:20px;margin-bottom:20px;}
+.ar{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.tog{width:38px;height:22px;border-radius:100px;background:var(--s2);border:1px solid var(--bd);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
+.tog.on{background:var(--or);border-color:var(--or);}
+.tog::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .2s;}
+.tog.on::after{left:19px;}
+.upa{background:var(--s2);border:1.5px dashed var(--bd);border-radius:10px;padding:20px;text-align:center;cursor:pointer;margin-bottom:12px;transition:all .15s;}
+.upa:hover{border-color:var(--or);}
+.upai{font-size:28px;margin-bottom:6px;}
+.upat{font-size:13px;color:var(--mt);font-weight:500;}
+.upas{font-size:11px;color:var(--mt);margin-top:3px;}
+.upload-progress{height:4px;background:var(--bd);border-radius:2px;margin-bottom:10px;overflow:hidden;display:none;}
+.upload-progress-bar{height:100%;background:var(--or);border-radius:2px;transition:width .3s;width:0%;}
+.prev-grid{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.prev-item{position:relative;width:82px;height:82px;border-radius:9px;overflow:hidden;border:1px solid var(--bd);}
+.prev-item img,.prev-item video{width:100%;height:100%;object-fit:cover;}
+.prev-rm{position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.75);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.clb{background:var(--s1);border:1px solid var(--bd);border-radius:14px;overflow:hidden;}
+.cr{border-bottom:1px solid var(--bd);}
+.cr:last-child{border-bottom:none;}
+.crh{display:flex;align-items:center;gap:10px;padding:13px 16px;flex-wrap:wrap;}
+.sbadge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0;text-transform:uppercase;}
+.bop{background:#2E1A1A;color:#F87171;}
+.brv{background:#1A2030;color:#60A5FA;}
+.brs{background:#1A3020;color:#3DD68C;}
+.crtt{font-size:12px;font-weight:500;flex:1;}
+.crdt{font-size:11px;color:var(--mt);}
+.adel{background:none;border:none;font-size:11px;color:var(--danger);cursor:pointer;padding:2px 6px;border-radius:5px;font-family:'DM Sans',sans-serif;}
+.adel:hover{background:#2E1A1A;}
+.comp-evidence{padding:0 16px 14px;}
+.comp-ev-grid{display:flex;gap:8px;flex-wrap:wrap;}
+.comp-ev-img{width:110px;height:100px;object-fit:cover;border-radius:9px;border:1px solid var(--bd);cursor:pointer;transition:transform .2s;}
+.comp-ev-img:hover{transform:scale(1.03);}
+
+/* Home ann cards */
+.ann-list{display:flex;flex-direction:column;gap:8px;}
+.ann-card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .15s;display:flex;}
+.ann-card:hover{border-color:var(--or);}
+.ann-card-img{width:90px;flex-shrink:0;background:var(--s2);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:24px;min-height:72px;}
+.ann-card-img img{width:100%;height:100%;object-fit:cover;position:absolute;}
+.ann-card-body{padding:10px 13px;flex:1;}
+.an{font-size:12px;font-weight:600;margin-bottom:2px;}
+.at{font-size:12px;color:var(--mt);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.atm{font-size:11px;color:var(--mt);margin-top:3px;}
+
+/* SIDEBAR */
+.wdg{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:12px;}
+.wtt{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;margin-bottom:12px;}
+.tri{display:flex;align-items:center;gap:7px;padding:7px 0;border-bottom:1px solid var(--bd);cursor:pointer;}
+.tri:last-child{border-bottom:none;}
+.trn{font-family:'Syne',sans-serif;font-size:11px;color:var(--mt);min-width:16px;}
+.trt{font-size:12px;font-weight:500;flex:1;}
+.trc{font-size:11px;color:var(--mt);}
+.tri:hover .trt{color:var(--or);}
+.cbanner{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:15px;display:flex;align-items:center;gap:13px;cursor:pointer;transition:border-color .15s;}
+.cbanner:hover{border-color:var(--or);}
+.cbi{width:44px;height:44px;border-radius:10px;background:#2E1A1A;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.feats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+.feat{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px;transition:border-color .15s;}
+.feat:hover{border-color:var(--or);}
+.fi2{font-size:24px;margin-bottom:8px;}
+.fn{font-size:12px;font-weight:600;margin-bottom:3px;}
+.fd{font-size:11px;color:var(--mt);line-height:1.55;}
+
+/* MODAL */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,0.82);display:flex;align-items:center;justify-content:center;z-index:999;padding:18px;}
+.mdl{background:var(--s1);border:1px solid var(--bd);border-radius:18px;padding:22px;width:100%;max-width:440px;max-height:92vh;overflow-y:auto;}
+.mtt{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+.mcl{background:none;border:none;color:var(--mt);font-size:20px;cursor:pointer;}
+
+/* LIGHTBOX */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:9999;display:none;align-items:center;justify-content:center;cursor:pointer;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:94vw;max-height:94vh;object-fit:contain;border-radius:8px;}
+.lb-close{position:absolute;top:18px;right:22px;color:#fff;font-size:28px;cursor:pointer;background:none;border:none;font-family:'Syne',sans-serif;font-weight:700;}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1A3020;border:1px solid var(--success);color:var(--success);padding:11px 24px;border-radius:10px;font-size:13px;font-weight:600;z-index:9998;display:none;white-space:nowrap;}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.lpip{width:7px;height:7px;border-radius:50%;background:var(--success);display:inline-block;animation:pulse 1.8s infinite;}
+
+@media(max-width:900px){
+  .mg,.news-grid,.spg,.rel-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .sc{display:none;}
+}
+@media(max-width:600px){
+  .hero h1{font-size:24px;}
+  .evr,.mpg{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .stats-row{gap:20px;}
+  .mc{padding:14px;}
+  .cw{padding:14px;}
+  .mg,.news-grid,.spg,.rel-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+<div class="lightbox" id="lb" onclick="closeLB()"><button class="lb-close" onclick="closeLB()">✕</button><img id="lb-img" src="" alt=""/></div>
+
+<!-- AUTH -->
+<div id="pg-auth" class="pg act" style="display:flex;">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <div class="auth-logo">Camp<b>mark</b></div>
+      <div class="auth-sub">Bells University Student Platform</div>
+      <div class="auth-tabs">
+        <button class="auth-tab act" id="tab-in" onclick="sAuth('in')">Sign In</button>
+        <button class="auth-tab" id="tab-up" onclick="sAuth('up')">Create Account</button>
+      </div>
+      <div id="f-in">
+        <div class="err-msg" id="in-err" style="display:none;"></div>
+        <label class="fl">Matric Number</label><input class="fi" id="in-m" placeholder="e.g. 2023/12745"/>
+        <label class="fl">Password</label><input class="fi" id="in-p" type="password" placeholder="Your password"/>
+        <button class="btn-or" id="in-btn" onclick="doLogin()">Sign In →</button>
+        <div class="auth-note">No account? <span onclick="sAuth('up')">Create one</span></div>
+      </div>
+      <div id="f-up" style="display:none;">
+        <div class="err-msg" id="up-err" style="display:none;"></div>
+        <label class="fl">Full Name</label><input class="fi" id="up-n" placeholder="Your full name"/>
+        <div class="fr2">
+          <div><label class="fl">Matric Number</label><input class="fi" id="up-m" placeholder="2023/12745"/></div>
+          <div><label class="fl">Department</label>
+            <select class="fi" id="up-d"><option>Computer Science</option><option>Law</option><option>Engineering</option><option>Pharmacy</option><option>Business Admin</option><option>Mass Comm</option><option>Medicine</option><option>Other</option></select>
+          </div>
+        </div>
+        <label class="fl">Password</label><input class="fi" id="up-p" type="password" placeholder="Create a password"/>
+        <button class="btn-or" id="up-btn" onclick="doSignup()">Create Account →</button>
+        <div class="auth-note">Have account? <span onclick="sAuth('in')">Sign in</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="pg-app" class="pg" style="display:none;">
+  <nav class="nav">
+    <div class="logo" onclick="go('home')">Camp<b>mark</b></div>
+    <div class="nav-links">
+      <button class="nl act" id="nl-home" onclick="go('home')">Home</button>
+      <button class="nl" id="nl-feed" onclick="go('feed')">Feed</button>
+      <button class="nl" id="nl-market" onclick="go('market')">Market</button>
+      <button class="nl" id="nl-religious" onclick="go('religious')">Religious</button>
+      <button class="nl" id="nl-news" onclick="go('news')">News</button>
+      <button class="nl" id="nl-sports" onclick="go('sports')">Sports</button>
+      <button class="nl" id="nl-complaints" onclick="go('complaints')">Complaints</button>
+    </div>
+    <div class="nav-r">
+      <button class="tbtn" onclick="toggleTheme()" id="tbtn">🌙</button>
+      <button class="nb">🔔 <span class="notif-cnt">0</span></button>
+      <div class="uav" id="uav">AO</div>
+    </div>
+  </nav>
+
+  <!-- HOME -->
+  <div id="sec-home" class="pg act">
+    <div class="hero"><div class="hero-glow"></div>
+      <h1>Your campus.<br><span>All in one place.</span></h1>
+      <p>Campmark is where Bells University students stay connected — announcements, marketplace, religious updates, sports, news and more.</p>
+      <div class="hero-btns"><button class="btn-hero" onclick="go('feed')">Explore Feed</button><button class="btn-ghost" onclick="go('market')">Browse Market</button></div>
+    </div>
+    <div class="stats-row">
+      <div><div class="stat-n" id="st-u">—</div><div class="stat-l">Students</div></div>
+      <div><div class="stat-n" id="st-p">—</div><div class="stat-l">Posts</div></div>
+      <div><div class="stat-n" id="st-l">—</div><div class="stat-l">Listings</div></div>
+      <div><div class="stat-n" id="st-c">—</div><div class="stat-l">Complaints</div></div>
+    </div>
+    <div class="two-col">
+      <div class="mc">
+        <div class="sr"><div class="sh"><div class="st">📢 Latest Posts</div><button class="sm2" onclick="go('feed')">See all →</button></div>
+          <div class="ann-list" id="home-anns"><div class="spinner-wrap"><div class="spinner"></div><div class="spinner-text">Loading...</div></div></div>
+        </div>
+        <div class="sr"><div class="sh"><div class="st">🛒 Marketplace</div><button class="sm2" onclick="go('market')">See all →</button></div>
+          <div class="mpg" id="home-mkt"><div class="spinner-wrap" style="grid-column:span 3;padding:24px;"><div class="spinner"></div></div></div>
+        </div>
+        <div class="sr"><div class="sh"><div class="st">📅 Events</div></div>
+          <div class="evr">
+            <div class="evc"><div class="edb"><div class="edy">16</div><div class="edm">Mar</div></div><div class="evn">Sunday Service</div><div class="evl">Auditorium · 8AM</div><button class="evrsvp" onclick="rsvp(this)">RSVP</button></div>
+            <div class="evc"><div class="edb"><div class="edy">22</div><div class="edm">Mar</div></div><div class="evn">Cultural Night</div><div class="evl">Sports Complex · 6PM</div><button class="evrsvp" onclick="rsvp(this)">RSVP</button></div>
+            <div class="evc"><div class="edb"><div class="edy">28</div><div class="edm">Mar</div></div><div class="evn">Career Fair</div><div class="evl">Senate Bldg · 10AM</div><button class="evrsvp" onclick="rsvp(this)">RSVP</button></div>
+          </div>
+        </div>
+        <div class="sr"><div class="cbanner" onclick="go('complaints')"><div class="cbi">📣</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;margin-bottom:3px;">Have a complaint?</div><div style="font-size:11px;color:var(--mt);">Submit with photos · Anonymous option · Admin reviews all</div></div><div style="font-size:16px;color:var(--or);">→</div></div></div>
+        <div class="sr"><div class="sh"><div class="st">Why Campmark?</div></div>
+          <div class="feats">
+            <div class="feat"><div class="fi2">🔒</div><div class="fn">Students only</div><div class="fd">Matric verified. No outsiders.</div></div>
+            <div class="feat"><div class="fi2">👻</div><div class="fn">Anonymous complaints</div><div class="fd">Speak freely without your name.</div></div>
+            <div class="feat"><div class="fi2">📸</div><div class="fn">Photo & video posts</div><div class="fd">Real images, beautifully displayed.</div></div>
+            <div class="feat"><div class="fi2">📲</div><div class="fn">No WhatsApp chaos</div><div class="fd">News never gets buried again.</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="sc">
+        <div class="wdg"><div class="wtt">🔥 Trending</div>
+          <div class="tri"><span class="trn">1</span><span class="trt">#ExamReschedule</span><span class="trc">42</span></div>
+          <div class="tri"><span class="trn">2</span><span class="trt">#CulturalNight</span><span class="trc">38</span></div>
+          <div class="tri"><span class="trn">3</span><span class="trt">#SundayService</span><span class="trc">29</span></div>
+          <div class="tri"><span class="trn">4</span><span class="trt">#JumatPrayer</span><span class="trc">21</span></div>
+        </div>
+        <div class="wdg"><div class="wtt">📅 This Month</div>
+          <div style="font-size:12px;color:var(--mt);line-height:2.3;"><div>Mar 16 — Sunday Service</div><div>Mar 21 — Jumat Prayer</div><div>Mar 22 — Cultural Night</div><div>Mar 28 — Career Fair</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEED -->
+  <div id="sec-feed" class="pg">
+    <div class="two-col">
+      <div class="mc">
+        <div class="cmp">
+          <div class="cmp-top"><div class="cav-sm" id="fav">AO</div><div class="cbox" onclick="oM('pm')">What's happening on campus?</div></div>
+          <div class="cact"><button class="cbtn" onclick="oM('pm')">📸 Photo</button><button class="cbtn" onclick="oM('pm')">🎥 Video</button><button class="psub" onclick="oM('pm')">Post</button></div>
+        </div>
+        <div id="feed-posts"><div class="spinner-wrap"><div class="spinner"></div><div class="spinner-text">Loading posts...</div></div></div>
+      </div>
+      <div class="sc">
+        <div class="wdg"><div class="wtt">🔥 Trending</div>
+          <div class="tri"><span class="trn">1</span><span class="trt">#ExamReschedule</span><span class="trc">42</span></div>
+          <div class="tri"><span class="trn">2</span><span class="trt">#SundayService</span><span class="trc">29</span></div>
+          <div class="tri"><span class="trn">3</span><span class="trt">#JumatPrayer</span><span class="trc">21</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARKET -->
+  <div id="sec-market" class="pg">
+    <div class="mph">
+      <div class="mpt"><div class="mptitle">🛒 Marketplace</div><button class="msell" onclick="oM('sm')">+ Sell Something</button></div>
+      <input class="msi" id="mq" placeholder="Search listings..." oninput="fMkt()"/>
+      <div class="cats">
+        <button class="catb act" onclick="fCat(this,'all')">All</button>
+        <button class="catb" onclick="fCat(this,'electronics')">Electronics</button>
+        <button class="catb" onclick="fCat(this,'books')">Books</button>
+        <button class="catb" onclick="fCat(this,'clothing')">Clothing</button>
+        <button class="catb" onclick="fCat(this,'furniture')">Furniture</button>
+        <button class="catb" onclick="fCat(this,'food')">Food</button>
+        <button class="catb" onclick="fCat(this,'services')">Services</button>
+      </div>
+    </div>
+    <div class="mg" id="mgrid"><div class="spinner-wrap" style="grid-column:span 3;"><div class="spinner"></div><div class="spinner-text">Loading listings...</div></div></div>
+  </div>
+
+  <!-- RELIGIOUS -->
+  <div id="sec-religious" class="pg">
+    <div style="background:var(--s1);border-bottom:1px solid var(--bd);padding:20px 24px 0;"><div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:14px;">🕊️ Religious</div></div>
+    <div class="rtabs">
+      <button class="rtab act-ch" id="rch" onclick="sRel('ch')">✝️ Christian</button>
+      <button class="rtab" id="rms" onclick="sRel('ms')">☪️ Muslim</button>
+    </div>
+    <div id="rel-ch" class="rcont act">
+      <div class="svc-card"><div class="svc-date"><div class="svc-day">16</div><div class="svc-mon">Mar</div></div><div class="svc-body"><div class="svc-type" style="color:#C084FC;">Sunday Service</div><div class="svc-title">"Walking in Purpose" — Rev. Adeyemi</div><div class="svc-loc">Main Auditorium · 8:00 AM</div></div><button class="svc-rsvp" onclick="rsvp(this)">RSVP</button></div>
+      <div class="svc-card" style="margin-bottom:0;"><div class="svc-date" style="background:#8B5CF6;"><div class="svc-day">19</div><div class="svc-mon">Mar</div></div><div class="svc-body"><div class="svc-type" style="color:#C084FC;">Mid-Week Fellowship</div><div class="svc-title">NIFES Bells — "Faith Over Fear"</div><div class="svc-loc">Multipurpose Hall · 6:30 PM</div></div><button class="svc-rsvp" onclick="rsvp(this)">RSVP</button></div>
+      <div class="rel-cmp" style="margin-top:16px;">
+        <div class="cmp-top"><div class="cav-sm" id="chav">AO</div><div class="cbox" onclick="oRelM('ch')">Share a Christian update or prayer request...</div></div>
+        <div class="cact"><button class="cbtn" onclick="oRelM('ch')">📸 Photo</button><button class="psub" onclick="oRelM('ch')">Post</button></div>
+      </div>
+      <div id="ch-posts"><div class="spinner-wrap"><div class="spinner"></div><div class="spinner-text">Loading...</div></div></div>
+    </div>
+    <div id="rel-ms" class="rcont">
+      <div class="svc-card"><div class="svc-date" style="background:#10B981;"><div class="svc-day">21</div><div class="svc-mon">Mar</div></div><div class="svc-body"><div class="svc-type" style="color:#4ADE80;">Jumat Prayer</div><div class="svc-title">Weekly Congregational Salah</div><div class="svc-loc">Islamic Centre, Behind Block D · 1:15 PM</div></div><button class="svc-rsvp" onclick="rsvp(this)">Attend</button></div>
+      <div class="rel-cmp" style="margin-top:16px;">
+        <div class="cmp-top"><div class="cav-sm" id="msav" style="background:#10B981;">AO</div><div class="cbox" onclick="oRelM('ms')">Share an Islamic update or reminder...</div></div>
+        <div class="cact"><button class="cbtn" onclick="oRelM('ms')">📸 Photo</button><button class="psub" onclick="oRelM('ms')">Post</button></div>
+      </div>
+      <div id="ms-posts"><div class="spinner-wrap"><div class="spinner"></div><div class="spinner-text">Loading...</div></div></div>
+    </div>
+  </div>
+
+  <!-- NEWS -->
+  <div id="sec-news" class="pg">
+    <div class="two-col">
+      <div class="mc">
+        <div class="sh" style="margin-bottom:16px;"><div class="st">📰 Campus News</div><button class="sm2" onclick="oM('nm')">+ Write Article</button></div>
+        <div class="news-hero">
+          <div class="news-hero-img">🏗️</div>
+          <div class="news-hero-body">
+            <span class="news-hero-tag" style="color:#2DD4BF;">Campus</span>
+            <div class="news-hero-title">New library extension opens Monday with 24hr power supply</div>
+            <div class="news-hero-excerpt">The brand new 200-seat library opens Monday morning with constant power, high-speed WiFi and a dedicated quiet zone for final year students...</div>
+            <div class="news-hero-meta"><span class="news-hero-author">Chukwuemeka D.</span> · 3 hours ago · 5 min read</div>
+          </div>
+        </div>
+        <div class="news-grid" id="nlist">
+          <div class="news-card"><div class="news-card-img">🎓</div><div class="news-card-body"><div class="news-card-tag" style="color:var(--or);">Achievement</div><div class="news-card-title">Bells student wins national engineering innovation award 2025</div><div class="news-card-meta"><span class="news-card-author">Amara O.</span> · Yesterday</div></div></div>
+          <div class="news-card"><div class="news-card-img">⚽</div><div class="news-card-body"><div class="news-card-tag" style="color:var(--success);">Sports</div><div class="news-card-title">Engineering faculty wins inter-faculty cup for 3rd year running</div><div class="news-card-meta"><span class="news-card-author">Sports Desk</span> · 2 days ago</div></div></div>
+          <div class="news-card"><div class="news-card-img">🍽️</div><div class="news-card-body"><div class="news-card-tag" style="color:#F87171;">Campus Life</div><div class="news-card-title">Students react to new cafeteria menu this semester</div><div class="news-card-meta"><span class="news-card-author">Blessing A.</span> · 3 days ago</div></div></div>
+          <div class="news-card"><div class="news-card-img">💡</div><div class="news-card-body"><div class="news-card-tag" style="color:#60A5FA;">Tech</div><div class="news-card-title">CS department launches coding bootcamp open to all departments</div><div class="news-card-meta"><span class="news-card-author">Emeka C.</span> · 4 days ago</div></div></div>
+          <div class="news-card"><div class="news-card-img">🏥</div><div class="news-card-body"><div class="news-card-tag" style="color:#F472B6;">Health</div><div class="news-card-title">Campus clinic now open on Saturdays for student consultations</div><div class="news-card-meta"><span class="news-card-author">Health Desk</span> · 5 days ago</div></div></div>
+          <div class="news-card"><div class="news-card-img">🎭</div><div class="news-card-body"><div class="news-card-tag" style="color:#A78BFA;">Events</div><div class="news-card-title">Cultural night performers announced — 12 acts confirmed</div><div class="news-card-meta"><span class="news-card-author">Events Team</span> · 5 days ago</div></div></div>
+        </div>
+      </div>
+      <div class="sc"><div class="wdg"><div class="wtt">🔥 Most Read</div>
+        <div class="tri"><span class="trn">1</span><span class="trt">Library opens Monday</span><span class="trc">312</span></div>
+        <div class="tri"><span class="trn">2</span><span class="trt">Exam reschedule</span><span class="trc">280</span></div>
+        <div class="tri"><span class="trn">3</span><span class="trt">Engineering wins cup</span><span class="trc">194</span></div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- SPORTS -->
+  <div id="sec-sports" class="pg">
+    <div class="two-col">
+      <div class="mc">
+        <div class="sh" style="margin-bottom:16px;"><div class="st">⚽ Sports <span class="lpip" style="margin-left:6px;"></span><span style="font-size:11px;color:var(--success);margin-left:3px;">Live</span></div><button class="sm2" onclick="oM('spm')">+ Post Score</button></div>
+        <div class="sport-hero">
+          <div class="sport-hero-img">⚽</div>
+          <div class="sport-hero-body">
+            <span class="tag t-sp" style="margin-bottom:10px;display:inline-block;">Football · Semi-Final · LIVE</span>
+            <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px;">Engineering vs Law Faculty</div>
+            <div style="font-family:'Syne',sans-serif;font-size:38px;font-weight:800;color:var(--or);margin-bottom:6px;" id="bsc">2 — 1</div>
+            <div style="font-size:12px;color:var(--mt);" id="bmn">62' · Faculty Ground B · Inter-Faculty Tournament</div>
+          </div>
+        </div>
+        <div class="spg" id="spgrid">
+          <div class="spc"><div class="spi">🏀</div><div class="spinfo"><div class="splb"><span class="lpip"></span>Basketball</div><div class="sptt">Sciences vs SS&LA</div><div class="spsc">34 — 29</div><div class="spdt">3rd Quarter</div></div></div>
+          <div class="spc"><div class="spi">🏐</div><div class="spinfo"><div class="splb">Volleyball</div><div class="sptt">Law vs Pharmacy</div><div class="spsc">2 — 1</div><div class="spdt">Set 3</div></div></div>
+          <div class="spc"><div class="spi">🏃</div><div class="spinfo"><div class="splb">Athletics</div><div class="sptt">100m Finals</div><div class="spsc">Sat 10AM</div><div class="spdt">Main Track</div></div></div>
+        </div>
+      </div>
+      <div class="sc"><div class="wdg"><div class="wtt">🏆 Standings</div>
+        <div style="font-size:12px;line-height:2.3;">
+          <div style="display:flex;justify-content:space-between;"><span style="color:var(--or);font-weight:600;">1. Engineering</span><span style="color:var(--mt);">12 pts</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>2. Law</span><span style="color:var(--mt);">10 pts</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>3. Sciences</span><span style="color:var(--mt);">9 pts</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>4. Pharmacy</span><span style="color:var(--mt);">7 pts</span></div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- COMPLAINTS -->
+  <div id="sec-complaints" class="pg">
+    <div class="cw">
+      <div class="ch2"><h2>Submit a <span>Complaint</span></h2><p>Attach photos as evidence. They show immediately. Admin removes inappropriate content.</p></div>
+      <div class="cfbox">
+        <label class="fl">Category</label>
+        <select class="fi" id="ccat"><option>Academic</option><option>Hostel / Accommodation</option><option>Food / Cafeteria</option><option>Security / Safety</option><option>Infrastructure (Light, Water, Roads)</option><option>Other</option></select>
+        <label class="fl">Complaint Title</label><input class="fi" id="ctit" placeholder="e.g. Water leaking in Block A corridor"/>
+        <label class="fl">Details</label><textarea class="fi" id="cbod" placeholder="Describe what happened in detail..."></textarea>
+        <label class="fl">Attach Photos / Videos (optional)</label>
+        <div class="upa" onclick="document.getElementById('cfile').click()"><div class="upai">📸</div><div class="upat">Tap to attach photo or video</div><div class="upas">Shows immediately · Admin removes inappropriate content</div></div>
+        <input type="file" id="cfile" accept="image/*,video/*" multiple style="display:none;" onchange="selCompFiles(this)"/>
+        <div class="upload-progress" id="comp-prog"><div class="upload-progress-bar" id="comp-prog-bar"></div></div>
+        <div class="prev-grid" id="comp-prev"></div>
+        <div class="ar"><div class="tog" id="atog" onclick="togA()"></div><span style="font-size:13px;color:var(--mt);">Submit anonymously</span></div>
+        <button class="btn-or" id="comp-btn" onclick="subComp()">Submit Complaint →</button>
+      </div>
+      <div class="sl">Recent Complaints</div>
+      <div class="clb" id="clist"><div class="spinner-wrap"><div class="spinner"></div><div class="spinner-text">Loading...</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div id="pm" class="mbg" style="display:none;" onclick="oOut(event,'pm')">
+  <div class="mdl">
+    <div class="mtt">Create a Post <button class="mcl" onclick="cM('pm')">✕</button></div>
+    <label class="fl">Post Type</label>
+    <select class="fi" id="ptype"><option value="general">📢 General</option><option value="christian">✝️ Christian</option><option value="muslim">☪️ Muslim</option><option value="sports">⚽ Sports</option><option value="market">🛒 Market</option></select>
+    <label class="fl">What's happening?</label>
+    <textarea class="fi" id="ptxt" placeholder="Share something with the campus..."></textarea>
+    <label class="fl">Photos / Videos (optional)</label>
+    <div class="upa" onclick="document.getElementById('pfile').click()"><div class="upai">📸</div><div class="upat">Tap to attach photos or video</div><div class="upas">Multiple photos supported</div></div>
+    <input type="file" id="pfile" accept="image/*,video/*" multiple style="display:none;" onchange="selPostFiles(this)"/>
+    <div class="upload-progress" id="post-prog"><div class="upload-progress-bar" id="post-prog-bar"></div></div>
+    <div class="prev-grid" id="post-prev"></div>
+    <button class="btn-or" id="post-btn" onclick="subPost()">Post →</button>
+  </div>
+</div>
+<div id="rm" class="mbg" style="display:none;" onclick="oOut(event,'rm')">
+  <div class="mdl">
+    <div class="mtt" id="rmtt">Post to Religious Feed <button class="mcl" onclick="cM('rm')">✕</button></div>
+    <textarea class="fi" id="rtxt" placeholder="Share an update, prayer request or event..."></textarea>
+    <label class="fl">Photo (optional)</label>
+    <div class="upa" onclick="document.getElementById('rfile').click()"><div class="upai">📸</div><div class="upat">Attach a photo</div></div>
+    <input type="file" id="rfile" accept="image/*" multiple style="display:none;" onchange="selRelFiles(this)"/>
+    <div class="upload-progress" id="rel-prog"><div class="upload-progress-bar" id="rel-prog-bar"></div></div>
+    <div class="prev-grid" id="rel-prev"></div>
+    <button class="btn-or" id="rel-btn" onclick="subRel()">Post →</button>
+  </div>
+</div>
+<div id="sm" class="mbg" style="display:none;" onclick="oOut(event,'sm')">
+  <div class="mdl">
+    <div class="mtt">Sell Something <button class="mcl" onclick="cM('sm')">✕</button></div>
+    <label class="fl">Item Name</label><input class="fi" id="sn" placeholder="e.g. MacBook Air M1"/>
+    <div class="fr2">
+      <div><label class="fl">Price (₦)</label><input class="fi" id="sellprice" placeholder="e.g. 50000"/></div>
+      <div><label class="fl">Category</label>
+        <select class="fi" id="sc2"><option value="electronics">Electronics</option><option value="books">Books</option><option value="clothing">Clothing</option><option value="furniture">Furniture</option><option value="food">Food</option><option value="services">Services</option></select>
+      </div>
+    </div>
+    <label class="fl">Description</label><input class="fi" id="sd" placeholder="Condition, what's included, etc."/>
+    <label class="fl">Photo of Item</label>
+    <div class="upa" onclick="document.getElementById('sfile').click()"><div class="upai">📷</div><div class="upat">Upload a clear photo of your item</div><div class="upas">Real photos get way more buyers!</div></div>
+    <input type="file" id="sfile" accept="image/*" style="display:none;" onchange="selSellFile(this)"/>
+    <div class="upload-progress" id="sell-prog"><div class="upload-progress-bar" id="sell-prog-bar"></div></div>
+    <div class="prev-grid" id="sell-prev"></div>
+    <button class="btn-or" id="sell-btn" onclick="subSell()">Post Listing →</button>
+  </div>
+</div>
+<div id="nm" class="mbg" style="display:none;" onclick="oOut(event,'nm')">
+  <div class="mdl">
+    <div class="mtt">Write a News Article <button class="mcl" onclick="cM('nm')">✕</button></div>
+    <label class="fl">Headline</label><input class="fi" id="nt" placeholder="Write a clear headline..."/>
+    <label class="fl">Story</label><textarea class="fi" id="nb2" placeholder="Write your article here..."></textarea>
+    <label class="fl">Cover Photo</label>
+    <div class="upa" onclick="document.getElementById('nfile').click()"><div class="upai">🖼️</div><div class="upat">Upload cover image</div></div>
+    <input type="file" id="nfile" accept="image/*" style="display:none;" onchange="selNewsFile(this)"/>
+    <div class="prev-grid" id="news-prev"></div>
+    <button class="btn-or" id="news-btn" onclick="subNews()">Publish →</button>
+  </div>
+</div>
+<div id="spm" class="mbg" style="display:none;" onclick="oOut(event,'spm')">
+  <div class="mdl">
+    <div class="mtt">Post Sports Update <button class="mcl" onclick="cM('spm')">✕</button></div>
+    <label class="fl">Match</label><input class="fi" id="smt" placeholder="e.g. Engineering vs Law"/>
+    <label class="fl">Score</label><input class="fi" id="ssc" placeholder="e.g. 2 — 1"/>
+    <label class="fl">Details</label><input class="fi" id="sdt" placeholder="e.g. 78' · Ground B"/>
+    <div class="upa" onclick="document.getElementById('spfile').click()"><div class="upai">📸</div><div class="upat">Attach match photo (optional)</div></div>
+    <input type="file" id="spfile" accept="image/*" style="display:none;"/>
+    <button class="btn-or" onclick="subSport()">Post Update →</button>
+  </div>
+</div>
+
+<script>
+const SURL='https://xmuqdtrhfaotwmtvjnvl.supabase.co';
+const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhtdXFkdHJoZmFvdHdtdHZqbnZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0MzA4NjIsImV4cCI6MjA4OTAwNjg2Mn0.8FYudMUAbywCi8cv8pCPpJjz3X4DsobMKbH0c6wdAbA';
+const sb=supabase.createClient(SURL,SKEY);
+const BUCKET='campmark',ADMIN='2023/12745';
+let dark=true,anonOn=false,activeRel='ch',cu=null,mins=62;
+let postFiles=[],sellFile=null,relFiles=[],compFiles=[],newsFile=null;
+
+function sAuth(t){document.getElementById('f-in').style.display=t==='in'?'block':'none';document.getElementById('f-up').style.display=t==='up'?'block':'none';document.getElementById('tab-in').classList.toggle('act',t==='in');document.getElementById('tab-up').classList.toggle('act',t==='up');}
+async function doLogin(){
+  const m=document.getElementById('in-m').value.trim(),p=document.getElementById('in-p').value.trim();
+  if(!m||!p){showErr('in-err','Enter matric number and password.');return;}
+  const btn=document.getElementById('in-btn');btn.disabled=true;btn.textContent='Signing in...';
+  const{data,error}=await sb.from('users').select('*').eq('matric_number',m).eq('password',p).single();
+  btn.disabled=false;btn.textContent='Sign In →';
+  if(error||!data){showErr('in-err','Wrong matric number or password.');return;}
+  cu=data;launch();
+}
+async function doSignup(){
+  const n=document.getElementById('up-n').value.trim(),m=document.getElementById('up-m').value.trim(),d=document.getElementById('up-d').value,p=document.getElementById('up-p').value.trim();
+  const btn=document.getElementById('up-btn');
+  if(!n||!m||!p){showErr('up-err','Fill in all fields.');return;}
+  btn.disabled=true;btn.textContent='Creating account...';
+  const{data:ex}=await sb.from('users').select('id').eq('matric_number',m).single();
+  if(ex){btn.disabled=false;btn.textContent='Create Account →';showErr('up-err','That matric number already has an account.');return;}
+  const{data,error}=await sb.from('users').insert({full_name:n,matric_number:m,department:d,password:p}).select().single();
+  btn.disabled=false;btn.textContent='Create Account →';
+  if(error){showErr('up-err','Could not create account.');return;}
+  cu=data;launch();
+}
+function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',4000);}
+function launch(){
+  document.getElementById('pg-auth').style.display='none';
+  document.getElementById('pg-app').style.display='block';
+  const ini=getIni(cu.full_name);
+  ['uav','fav','chav','msav'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=ini;});
+  loadAll();
+}
+const isAdmin=()=>cu&&cu.matric_number===ADMIN;
+const getIni=n=>{const w=n.split(' ');return(w.length>=2?w[0][0]+w[1][0]:n.slice(0,2)).toUpperCase();};
+const safeJson=s=>{try{return s?JSON.parse(s):[]}catch{return[];}};
+const timeAgo=ts=>{const s=Math.floor((new Date()-new Date(ts))/1000);if(s<60)return'Just now';if(s<3600)return Math.floor(s/60)+'m ago';if(s<86400)return Math.floor(s/3600)+'h ago';return Math.floor(s/86400)+'d ago';};
+const hashStr=s=>{let h=0;for(let i=0;i<s.length;i++)h=Math.imul(31,h)+s.charCodeAt(i)|0;return h;};
+
+async function uploadFile(file,folder){
+  const ext=file.name.split('.').pop();
+  const fname=`${folder}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+  const{error}=await sb.storage.from(BUCKET).upload(fname,file,{cacheControl:'3600',upsert:false});
+  if(error)return null;
+  return sb.storage.from(BUCKET).getPublicUrl(fname).data.publicUrl;
+}
+async function uploadMultiple(files,folder,progId){
+  const urls=[];
+  for(let i=0;i<files.length;i++){
+    if(progId){document.getElementById(progId).style.display='block';document.getElementById(progId+'-bar').style.width=Math.round(((i+1)/files.length)*100)+'%';}
+    const u=await uploadFile(files[i],folder);if(u)urls.push(u);
+  }
+  if(progId)setTimeout(()=>document.getElementById(progId).style.display='none',600);
+  return urls;
+}
+
+function selPostFiles(i){postFiles=Array.from(i.files);showPrev(postFiles,'post-prev');}
+function selSellFile(i){sellFile=i.files[0]||null;showPrev(sellFile?[sellFile]:[],'sell-prev');}
+function selRelFiles(i){relFiles=Array.from(i.files);showPrev(relFiles,'rel-prev');}
+function selCompFiles(i){compFiles=Array.from(i.files);showPrev(compFiles,'comp-prev');}
+function selNewsFile(i){newsFile=i.files[0]||null;showPrev(newsFile?[newsFile]:[],'news-prev');}
+function showPrev(files,pid){
+  const el=document.getElementById(pid);el.innerHTML='';
+  files.forEach(f=>{
+    const url=URL.createObjectURL(f);
+    const w=document.createElement('div');w.className='prev-item';
+    w.innerHTML=f.type.startsWith('video')?`<video src="${url}" muted></video>`:`<img src="${url}"/>`;
+    const r=document.createElement('button');r.className='prev-rm';r.textContent='✕';r.onclick=()=>w.remove();
+    w.appendChild(r);el.appendChild(w);
+  });
+}
+
+async function loadAll(){loadStats();loadFeed();loadListings();loadComplaints();loadHomeAnns();loadHomeMkt();loadRelPosts('christian','ch-posts');loadRelPosts('muslim','ms-posts');}
+async function loadStats(){
+  const[{count:uc},{count:pc},{count:lc},{count:cc}]=await Promise.all([sb.from('users').select('*',{count:'exact',head:true}),sb.from('posts').select('*',{count:'exact',head:true}),sb.from('listings').select('*',{count:'exact',head:true}),sb.from('complaints').select('*',{count:'exact',head:true})]);
+  if(uc!=null)document.getElementById('st-u').textContent=uc+'+';
+  if(pc!=null)document.getElementById('st-p').textContent=pc;
+  if(lc!=null)document.getElementById('st-l').textContent=lc;
+  if(cc!=null)document.getElementById('st-c').textContent=cc;
+}
+async function loadFeed(){
+  const fp=document.getElementById('feed-posts');
+  const{data}=await sb.from('posts').select('*').order('created_at',{ascending:false}).limit(30);
+  if(!data||!data.length){fp.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No posts yet</div><div class="empty-sub">Be the first to post something!</div></div>';return;}
+  fp.innerHTML=data.map(renderPost).join('');
+}
+async function loadHomeAnns(){
+  const el=document.getElementById('home-anns');
+  const{data}=await sb.from('posts').select('*').order('created_at',{ascending:false}).limit(4);
+  if(!data||!data.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No posts yet</div></div>';return;}
+  const em={christian:'⛪',muslim:'🕌',sports:'⚽',market:'🛒',general:'📢'};
+  el.innerHTML=data.map(p=>{const imgs=safeJson(p.image_urls);return`<div class="ann-card"><div class="ann-card-img">${imgs.length?`<img src="${imgs[0]}" alt="post"/>`:(em[p.post_type]||'📢')}</div><div class="ann-card-body"><div class="an">${p.author_name}</div><div class="at">${p.body.substring(0,85)}${p.body.length>85?'...':''}</div><div class="atm">${timeAgo(p.created_at)}</div></div></div>`;}).join('');
+}
+async function loadHomeMkt(){
+  const el=document.getElementById('home-mkt');
+  const{data}=await sb.from('listings').select('*').eq('is_sold',false).order('created_at',{ascending:false}).limit(6);
+  const em={electronics:'📱',books:'📚',clothing:'👕',furniture:'🛋️',food:'🍱',services:'🛠️'};
+  if(!data||!data.length){el.innerHTML='<div class="empty-state" style="grid-column:span 3;padding:24px;"><div class="empty-icon">🛒</div><div class="empty-title">No listings yet</div></div>';return;}
+  el.innerHTML=data.map(l=>`<div class="mpc" onclick="go('market')"><div class="mt2">${l.image_url?`<img src="${l.image_url}" alt="${l.item_name}"/>`:(em[l.category]||'📦')}${l.is_sold?'<div class="sov"><span class="spill">SOLD</span></div>':''}</div><div class="mpi"><div class="mpn">${l.item_name}</div><div class="mpp">₦${Number(l.price).toLocaleString()}</div><div class="mps">${l.seller_name}</div></div></div>`).join('');
+}
+async function loadListings(){
+  const g=document.getElementById('mgrid');
+  const{data}=await sb.from('listings').select('*').order('created_at',{ascending:false});
+  const em={electronics:'📱',books:'📚',clothing:'👕',furniture:'🛋️',food:'🍱',services:'🛠️'};
+  if(!data||!data.length){g.innerHTML='<div class="empty-state" style="grid-column:span 3;"><div class="empty-icon">🛒</div><div class="empty-title">No listings yet</div><div class="empty-sub">Be the first to sell something!</div></div>';return;}
+  g.innerHTML=data.map(l=>{
+    const sold=l.is_sold,canSold=cu&&l.user_id===cu.id,canDel=isAdmin()&&!canSold;
+    return`<div class="mc2" data-cat="${l.category}" data-id="${l.id}">
+      <div class="mkt-sq" onclick="openLB('${l.image_url||''}')">
+        ${l.image_url?`<img src="${l.image_url}" alt="${l.item_name}"/>`:`<div style="font-size:48px;">${em[l.category]||'📦'}</div>`}
+        ${sold?'<div class="sold-badge">SOLD</div>':''}
+      </div>
+      <div class="mcb">
+        <div class="mcn">${l.item_name}</div>
+        <div class="mprice">₦${Number(l.price).toLocaleString()}</div>
+        <div class="msel">${l.seller_name} · ${timeAgo(l.created_at)}</div>
+        <button class="dmbtn" ${sold?'disabled':''} onclick="event.stopPropagation();alert('Contact ${l.seller_name} on Campmark!')">${sold?'Sold':'DM Seller'}</button>
+        ${canSold?`<button class="soldbtn ${sold?'done':''}" onclick="mSold(this,'${l.id}')">${sold?'Marked as Sold':'Mark as Sold'}</button>`:''}
+        ${canDel?`<button class="soldbtn" style="border-color:var(--danger);color:var(--danger);margin-top:4px;" onclick="delListing('${l.id}')">🗑 Remove</button>`:''}
+      </div></div>`;
+  }).join('');
+}
+async function loadComplaints(){
+  const el=document.getElementById('clist');
+  const{data}=await sb.from('complaints').select('*').order('created_at',{ascending:false});
+  if(!data||!data.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-title">No complaints yet</div></div>';return;}
+  el.innerHTML=data.map(c=>{
+    const imgs=safeJson(c.image_urls),canDel=isAdmin()||(cu&&c.user_id===cu.id);
+    return`<div class="cr" data-id="${c.id}"><div class="crh"><span class="sbadge ${c.status==='Resolved'?'brs':c.status==='In Review'?'brv':'bop'}">${c.status}</span><span class="crtt">${c.title} — ${c.is_anonymous?'Anonymous':c.author_name}</span><span class="crdt">${timeAgo(c.created_at)}</span>${canDel?`<button class="adel" onclick="dC(this,'${c.id}')">🗑 Delete</button>`:''}</div>${imgs.length?`<div class="comp-evidence"><div class="comp-ev-grid">${imgs.map(u=>`<img class="comp-ev-img" src="${u}" alt="evidence" onclick="openLB('${u}')"/>`).join('')}</div></div>`:''}</div>`;
+  }).join('');
+}
+async function loadRelPosts(type,cid){
+  const el=document.getElementById(cid);
+  const{data}=await sb.from('posts').select('*').eq('post_type',type).order('created_at',{ascending:false}).limit(20);
+  if(!data||!data.length){
+    const icon=type==='christian'?'⛪':'🕌';
+    const msg=type==='christian'?'No Christian posts yet':'No Muslim posts yet';
+    const container=el.closest('.rcont');
+    let grid=container.querySelector('.rel-grid');
+    if(!grid){grid=document.createElement('div');grid.className='rel-grid';el.parentNode.insertBefore(grid,el);}
+    grid.innerHTML='';
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">${icon}</div><div class="empty-title">${msg}</div><div class="empty-sub">Be the first to post!</div></div>`;
+    return;
+  }
+  const isChrist=type==='christian';
+  const tagColor=isChrist?'#C084FC':'#4ADE80';
+  const tagLabel=isChrist?'Chapel':'Mosque';
+  const container=el.closest ? el.closest('.rcont') : null;
+  let grid=container?container.querySelector('.rel-grid'):null;
+  if(!grid){grid=document.createElement('div');grid.className='rel-grid';el.parentNode.insertBefore(grid,el);}
+  grid.innerHTML=data.map(p=>{
+    const imgs=safeJson(p.image_urls);
+    const canDel=isAdmin()||(cu&&p.user_id===cu.id);
+    const ini=getIni(p.author_name||'AN');
+    const av=isChrist?'av-pu':'av-gr';
+    const icon=isChrist?'🙏':'🤲';
+    const defImg=isChrist?'⛪':'🕌';
+    return`<div class="rcard" data-id="${p.id}">
+      <div class="rcard-img">${imgs.length?`<img src="${imgs[0]}" alt="" onclick="openLB('${imgs[0]}')"/>`:`<span>${defImg}</span>`}</div>
+      <div class="rcard-body">
+        <div class="rcard-tag" style="color:${tagColor};">${tagLabel}</div>
+        <div class="rcard-title">${p.body}</div>
+        <div class="rcard-meta"><span>${p.author_name}</span> · ${timeAgo(p.created_at)}</div>
+        <div class="rcard-acts">
+          <button class="rabt" onclick="likePost(this,'${p.id}',${p.likes||0})">${icon} ${p.likes||0}</button>
+          <button class="rabt">💬 Reply</button>
+          ${canDel?`<button class="rabt" style="color:var(--danger);margin-left:auto;" onclick="dRelPost(this,'${p.id}')">🗑</button>`:''}
+        </div>
+      </div></div>`;
+  }).join('');
+  el.innerHTML='';
+}
+
+function renderPost(p){
+  const avC=['av-or','av-bl','av-gr','av-pu','av-pk'];
+  const av=avC[Math.abs(hashStr(p.author_name||''))%avC.length];
+  const ini=getIni(p.author_name||'AN');
+  const tagM={general:'<span class="tag t-gen">Post</span>',christian:'<span class="tag t-ch">Chapel</span>',muslim:'<span class="tag t-ms">Mosque</span>',sports:'<span class="tag t-sp">Sports</span>',market:'<span class="tag t-mk">Market</span>'};
+  const tag=tagM[p.post_type]||tagM.general;
+  const canDel=isAdmin()||(cu&&p.user_id===cu.id);
+  const imgs=safeJson(p.image_urls);const vid=p.video_url||null;
+  let media='';
+  if(vid)media=`<div class="post-media"><video src="${vid}" controls style="width:100%;max-height:420px;display:block;background:#000;"></video></div>`;
+  else if(imgs.length===1)media=`<div class="post-media" onclick="openLB('${imgs[0]}')"><img src="${imgs[0]}" alt=""/></div>`;
+  else if(imgs.length===2)media=`<div class="post-media multi-2">${imgs.map(u=>`<div class="img-item" onclick="openLB('${u}')"><img src="${u}" alt=""/></div>`).join('')}</div>`;
+  else if(imgs.length>=3){const ex=imgs.length-3;media=`<div class="post-media multi-3">${imgs.slice(0,3).map((u,i)=>`<div class="img-item" onclick="openLB('${u}')"><img src="${u}" alt=""/>${i===2&&ex>0?`<div class="more-overlay">+${ex}</div>`:''}</div>`).join('')}</div>`;}
+  return`<div class="post" data-id="${p.id}"><div class="post-inner"><div class="phead"><div class="pav ${av}">${ini}</div><div class="pmeta"><div class="pname">${p.author_name}${p.author_name==='Adeniran Ebenezer'?'<span class="veri">✦ Admin</span>':''}</div><div class="ptime">${timeAgo(p.created_at)}</div></div>${tag}</div><div class="pbody">${p.body}</div></div>${media}<div class="pact"><button class="abt" onclick="likePost(this,'${p.id}',${p.likes||0})">👍 ${p.likes||0}</button><button class="abt">💬 Reply</button>${canDel?`<button class="abt delbtn" onclick="dP(this,'${p.id}')">🗑 Delete</button>`:''}</div></div>`;
+}
+
+async function subPost(){
+  const txt=document.getElementById('ptxt').value.trim(),type=document.getElementById('ptype').value;
+  if(!txt){alert('Write something!');return;}
+  const btn=document.getElementById('post-btn');btn.disabled=true;btn.textContent='Posting...';
+  let imgUrls=[],vidUrl=null;
+  if(postFiles.length){
+    const vs=postFiles.filter(f=>f.type.startsWith('video')),is=postFiles.filter(f=>f.type.startsWith('image'));
+    if(vs.length)vidUrl=await uploadFile(vs[0],'posts');
+    if(is.length)imgUrls=await uploadMultiple(is,'posts','post-prog');
+  }
+  const{error}=await sb.from('posts').insert({user_id:cu.id,author_name:cu.full_name,body:txt,post_type:type,likes:0,image_urls:imgUrls.length?JSON.stringify(imgUrls):null,video_url:vidUrl});
+  btn.disabled=false;btn.textContent='Post →';
+  if(error){alert('Could not post. Try again.');return;}
+  document.getElementById('ptxt').value='';document.getElementById('post-prev').innerHTML='';
+  postFiles=[];cM('pm');showToast('Posted! ✓');loadFeed();loadHomeAnns();loadStats();
+  if(type==='christian')loadRelPosts('christian','ch-posts');
+  if(type==='muslim')loadRelPosts('muslim','ms-posts');
+}
+async function subRel(){
+  const txt=document.getElementById('rtxt').value.trim();
+  if(!txt){alert('Write something!');return;}
+  const btn=document.getElementById('rel-btn');btn.disabled=true;btn.textContent='Posting...';
+  const type=activeRel==='ch'?'christian':'muslim';
+  let imgUrls=[];
+  if(relFiles.length)imgUrls=await uploadMultiple(relFiles,'religious','rel-prog');
+  const{error}=await sb.from('posts').insert({user_id:cu.id,author_name:cu.full_name,body:txt,post_type:type,likes:0,image_urls:imgUrls.length?JSON.stringify(imgUrls):null});
+  btn.disabled=false;btn.textContent='Post →';
+  if(error){alert('Could not post.');return;}
+  document.getElementById('rtxt').value='';document.getElementById('rel-prev').innerHTML='';
+  relFiles=[];cM('rm');showToast('Posted! ✓');loadRelPosts(type,activeRel+'-posts');loadFeed();loadStats();
+}
+async function subSell(){
+  const n=document.getElementById('sn').value.trim(),pr=document.getElementById('sellprice').value.trim(),d=document.getElementById('sd').value.trim(),cat=document.getElementById('sc2').value;
+  if(!n||!pr){alert('Enter item name and price.');return;}
+  const btn=document.getElementById('sell-btn');btn.disabled=true;btn.textContent='Posting...';
+  let imgUrl=null;if(sellFile)imgUrl=await uploadFile(sellFile,'listings');
+  const{error}=await sb.from('listings').insert({user_id:cu.id,seller_name:cu.full_name,item_name:n,price:parseInt(pr),description:d,category:cat,image_url:imgUrl,is_sold:false});
+  btn.disabled=false;btn.textContent='Post Listing →';
+  if(error){alert('Could not post listing.');return;}
+  document.getElementById('sn').value='';document.getElementById('sellprice').value='';document.getElementById('sd').value='';
+  document.getElementById('sell-prev').innerHTML='';sellFile=null;cM('sm');showToast('Listing posted! ✓');loadListings();loadHomeMkt();loadStats();
+}
+async function subComp(){
+  const t=document.getElementById('ctit').value.trim(),b=document.getElementById('cbod').value.trim();
+  if(!t||!b){alert('Fill in title and details.');return;}
+  const btn=document.getElementById('comp-btn');btn.disabled=true;btn.textContent='Submitting...';
+  let imgUrls=[];if(compFiles.length)imgUrls=await uploadMultiple(compFiles,'complaints','comp-prog');
+  const{error}=await sb.from('complaints').insert({user_id:cu.id,title:t,details:b,category:document.getElementById('ccat').value,is_anonymous:anonOn,author_name:anonOn?'Anonymous':cu.full_name,status:'Open',image_urls:imgUrls.length?JSON.stringify(imgUrls):null});
+  btn.disabled=false;btn.textContent='Submit Complaint →';
+  if(error){alert('Could not submit.');return;}
+  document.getElementById('ctit').value='';document.getElementById('cbod').value='';
+  document.getElementById('comp-prev').innerHTML='';compFiles=[];showToast('Complaint submitted ✓');loadComplaints();loadStats();
+}
+function subNews(){
+  const t=document.getElementById('nt').value.trim(),b=document.getElementById('nb2').value.trim();
+  if(!t||!b){alert('Fill in headline and story.');return;}
+  const imgH=newsFile?`<div class="news-card-img"><img src="${URL.createObjectURL(newsFile)}" alt="cover"/></div>`:'<div class="news-card-img">📝</div>';
+  const c=document.createElement('div');c.className='news-card';
+  c.innerHTML=`${imgH}<div class="news-card-body"><div class="news-card-tag" style="color:var(--or);">Campus</div><div class="news-card-title">${t}</div><div class="news-card-meta"><span class="news-card-author">${cu.full_name}</span> · Just now</div></div>`;
+  const l=document.getElementById('nlist');l.insertBefore(c,l.firstChild);
+  document.getElementById('nt').value='';document.getElementById('nb2').value='';
+  document.getElementById('news-prev').innerHTML='';newsFile=null;cM('nm');showToast('Article published! ✓');
+}
+function subSport(){
+  const m=document.getElementById('smt').value.trim(),s=document.getElementById('ssc').value.trim(),d=document.getElementById('sdt').value.trim();
+  if(!m||!s){alert('Fill in match and score.');return;}
+  const c=document.createElement('div');c.className='spc';
+  c.innerHTML=`<div class="spi">⚽</div><div class="spinfo"><div class="splb">Just now</div><div class="sptt">${m}</div><div class="spsc">${s}</div><div class="spdt">${d}</div></div>`;
+  const g=document.getElementById('spgrid');g.insertBefore(c,g.firstChild);
+  document.getElementById('smt').value='';document.getElementById('ssc').value='';document.getElementById('sdt').value='';cM('spm');showToast('Score posted! ✓');
+}
+
+async function likePost(btn,id,cur){const n=(cur||0)+1;await sb.from('posts').update({likes:n}).eq('id',id);btn.textContent=btn.textContent.split(' ')[0]+' '+n;btn.classList.add('liked');}
+async function dP(btn,id){if(!confirm('Delete this post?'))return;await sb.from('posts').delete().eq('id',id);btn.closest('.post').remove();showToast('Post deleted ✓');}
+async function dRelPost(btn,id){if(!confirm('Delete this post?'))return;await sb.from('posts').delete().eq('id',id);btn.closest('.rcard').remove();showToast('Post deleted ✓');}
+async function dC(btn,id){if(!confirm('Delete this complaint?'))return;await sb.from('complaints').delete().eq('id',id);btn.closest('.cr').remove();showToast('Deleted ✓');}
+async function mSold(btn,id){
+  if(btn.classList.contains('done'))return;
+  await sb.from('listings').update({is_sold:true}).eq('id',id);
+  btn.classList.add('done');btn.textContent='Marked as Sold';
+  const card=btn.closest('.mc2'),img=card.querySelector('.mkt-sq');
+  if(img&&!img.querySelector('.sold-badge')){const b=document.createElement('div');b.className='sold-badge';b.textContent='SOLD';img.appendChild(b);}
+  const dm=card.querySelector('.dmbtn');if(dm){dm.disabled=true;dm.textContent='Sold';}
+  showToast('Marked as sold ✓');
+}
+async function delListing(id){if(!confirm('Delete this listing?'))return;await sb.from('listings').delete().eq('id',id);document.querySelector(`.mc2[data-id="${id}"]`)?.remove();showToast('Listing deleted ✓');}
+function rsvp(b){b.classList.toggle('done');b.textContent=b.classList.contains('done')?'✓ Going':'RSVP';}
+function togA(){anonOn=!anonOn;document.getElementById('atog').classList.toggle('on',anonOn);}
+function openLB(url){if(!url)return;document.getElementById('lb-img').src=url;document.getElementById('lb').classList.add('open');}
+function closeLB(){document.getElementById('lb').classList.remove('open');}
+function fCat(b,cat){document.querySelectorAll('.catb').forEach(x=>x.classList.remove('act'));b.classList.add('act');document.querySelectorAll('.mc2').forEach(c=>{c.style.display=(cat==='all'||c.dataset.cat===cat)?'block':'none';});}
+function fMkt(){const q=document.getElementById('mq').value.toLowerCase();document.querySelectorAll('.mc2').forEach(c=>{const n=c.querySelector('.mcn');c.style.display=n&&n.textContent.toLowerCase().includes(q)?'block':'none';});}
+function go(p){document.querySelectorAll('#pg-app .pg').forEach(x=>x.classList.remove('act'));document.querySelectorAll('.nl').forEach(b=>b.classList.remove('act'));document.getElementById('sec-'+p).classList.add('act');const b=document.getElementById('nl-'+p);if(b)b.classList.add('act');['pm','rm','sm','nm','spm'].forEach(cM);window.scrollTo(0,0);}
+function sRel(t){activeRel=t;document.getElementById('rel-ch').classList.toggle('act',t==='ch');document.getElementById('rel-ms').classList.toggle('act',t==='ms');document.getElementById('rch').className='rtab'+(t==='ch'?' act-ch':'');document.getElementById('rms').className='rtab'+(t==='ms'?' act-ms':'');}
+function oRelM(t){activeRel=t;document.getElementById('rmtt').innerHTML=(t==='ch'?'Post to Christian Feed':'Post to Muslim Feed')+' <button class="mcl" onclick="cM(\'rm\')">✕</button>';oM('rm');}
+function toggleTheme(){dark=!dark;document.body.classList.toggle('light',!dark);document.getElementById('tbtn').textContent=dark?'🌙':'☀️';}
+function oM(id){document.getElementById(id).style.display='flex';}
+function cM(id){const el=document.getElementById(id);if(el)el.style.display='none';}
+function oOut(e,id){if(e.target.id===id)cM(id);}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2500);}
+setInterval(()=>{mins++;const e=document.getElementById('bmn');if(e)e.textContent=mins+"' · Faculty Ground B";},8000);
+</script>
+</body>
+</html>
